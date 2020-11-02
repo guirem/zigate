@@ -1321,7 +1321,7 @@ class ZiGate(object):
         '''
         device = self.get_device_from_addr(addr)
         if not device:
-            return     
+            return
         device.refresh_device(full, force)
 
     def discover_device(self, addr, force=False):
@@ -2681,6 +2681,20 @@ class Device(object):
             if 0x0400 in endpoint['in_clusters']:
                 LOGGER.debug('bind for cluster 0x0400')
                 self._zigate.bind_addr(self.addr, endpoint_id, 0x0400)
+            if 0x0402 in endpoint['in_clusters']:
+                if endpoint['device'] in (0x0302,):   # SNZB-02
+                    LOGGER.debug('bind for cluster 0x0402 for SNZB-02 device')
+                    self._zigate.bind_addr(self.addr, endpoint_id, 0x0402)
+                    self._zigate.reporting_request(self.addr,
+                                                   endpoint_id,
+                                                   0x0402, (0x0000, 0x29))
+            if 0x0405 in endpoint['in_clusters']:
+                if endpoint['device'] in (0x0302,):   # SNZB-02
+                    LOGGER.debug('bind for cluster 0x0405 for SNZB-02 device')
+                    self._zigate.bind_addr(self.addr, endpoint_id, 0x0405)
+                    self._zigate.reporting_request(self.addr,
+                                                   endpoint_id,
+                                                   0x0405, (0x0000, 0x21))
             if 0xFC00 in endpoint['in_clusters']:
                 LOGGER.debug('bind for cluster 0xFC00')
                 self._zigate.bind_addr(self.addr, endpoint_id, 0xFC00)
